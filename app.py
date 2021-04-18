@@ -39,7 +39,7 @@ def welcome():
     return (
         f"Available Routes:<br/>"
         "<br/>"
-        f"Information about precipitation:/api/v1.0/precipitation<br/>"
+        f"Information about precipitation from Aug 2016 to Aug 2017:/api/v1.0/precipitation<br/>"
         "<br/>"
         f"Information about stations: /api/v1.0/stations<br/>"
         "<br/>"
@@ -57,7 +57,9 @@ def precipitation():
 
     """Return a list of all passenger names"""
     # Query all date and prcp
-    results = session.query(Measurement.date, Measurement.prcp).all()
+    query_dt = session.query(Measurement.date).order_by(Measurement.date.desc()).group_by(Measurement.date).limit(1).all()
+    query_date = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    results = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= query_date).all()
 
     session.close()
 
@@ -125,7 +127,14 @@ def start(start):
     session.close()
 
      # Convert list of tuples into normal list
-    all_sd = list(np.ravel(results))
+    all_sd = []
+    for date, mint, avgt, maxt in results:
+        allsds = {}
+        allsds["Date"] = date
+        allsds["Min Temp"] = mint
+        allsds["Avg Temp"] = avgt
+        allsds["Max Temp"] = maxt
+        all_sd.append(allsds)
 
     return jsonify(all_sd)
 
@@ -141,8 +150,14 @@ def Startend(start,end):
     session.close()
 
      # Convert list of tuples into normal list
-    all_sded = list(np.ravel(results))
-
+    all_sded = []
+    for date, mint, avgt, maxt in results:
+        allsded = {}
+        allsded["Date"] = date
+        allsded["Min Temp"] = mint
+        allsded["Avg Temp"] = avgt
+        allsded["Max Temp"] = maxt
+        all_sded.append(allsded)
     return jsonify(all_sded)
 
 if __name__ == '__main__':
