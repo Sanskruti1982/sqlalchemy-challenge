@@ -45,9 +45,9 @@ def welcome():
         "<br/>"
         f"Information about temperature from Aug 2016 to Aug 2017:/api/v1.0/tobs<br/>"
         "<br/>"
-        f"Information on min, max and avg temperature for start date provided (format:dd-mm-yy):/api/v1.0/<start><br/>"
+        f"Information on min, max and avg temperature for start date provided (format:yyyy-mm-dd):/api/v1.0/<start><br/>"
         "<br/>"
-        f"Information on min, max and avg temperature for start and end date provided (start date format:dd-mm-yy/end date format:dd-mm-yy):/api/v1.0/<start>/<end><br/>"
+        f"Information on min, max and avg temperature for start and end date provided (start date format:yyyy-mm-dd/end date format:yyyy-mm-dd):/api/v1.0/<start>/<end><br/>"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -122,7 +122,7 @@ def start(start):
 
     # Query all min, max and avg tobs for start date specified 
     sel = [(Measurement.date),func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
-    results = session.query(*sel).group_by(Measurement.date).filter(Measurement.date >= start).all()
+    results = session.query(*sel).filter(Measurement.date >= start).all()
 
     session.close()
 
@@ -145,7 +145,7 @@ def Startend(start,end):
 
      # Query all min, max and avg tobs for start date and end date specified 
     sel = [(Measurement.date),func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
-    results = session.query(*sel).group_by(Measurement.date).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+    results = session.query(*sel).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
 
     session.close()
 
